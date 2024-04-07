@@ -2,80 +2,104 @@ import React, { useState, Fragment, useEffect } from "react";
 import { nanoid } from "nanoid";
 import Web3 from "web3";
 import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
-import contract from "../contracts/contract.json"; // Replace with your contract details
+import Sidebar from "../components/Sidebar";
+import contract from "../contracts/contract.json";
 import { useCookies } from "react-cookie";
-import { create } from 'ipfs-http-client'
 
 const MedicalHistory = () => {
-  const [mycontract, setMyContract] = useState(null); // State variable for contract instance
-  const [medicalHistory, setMedicalHistory] = useState(null); // State variable for fetched data
-  const [error, setError] = useState(null); // State variable for errors
+  const [cookies, setCookie] = useCookies();
+  const web3 = new Web3(window.ethereum);
+  const mycontract = new web3.eth.Contract(
+    contract["abi"],
+    contract["address"]
+  );
+  const [medHistory, setMedHistory] = useState([{}]);
 
   useEffect(() => {
-    const initializeContract = async () => {
-      try {
-        const web3 = new Web3(window.ethereum); // Assuming you have Web3 provider setup
-        const contract = new web3.eth.Contract(contractData.abi, contractData.address);
-        setMyContract(contract);
-      } catch (error) {
-        setError(error);
-        console.error('Error initializing contract:', error);
-      }
-    };
-
-    initializeContract();
-  }, []); // Empty dependency array to run only once on component mount
-
-  const fetchData = async () => {
-    if (!mycontract) {
-      console.warn('Contract not yet initialized');
-      return; // Prevent unnecessary calls before contract is ready
+    const all = [];
+    async function getMedHistory() {
+      await mycontract.methods
+        .getdata()
+        .call()
+        .then(res => {
+          for (let i = 0; i < res.length; i++) {
+            var data = JSON.parse(res[i]);
+            if (data["type"] === "patient" && data['mail'] === cookies['mail']) {
+              if (data.hasOwnProperty('medicalhistory')) {
+                for (let i = 0; i < data['medicalhistory'].length; i++) {
+                  if (data['medicalhistory'][i].hasOwnProperty('disease')) {
+                    all.push(data['medicalhistory'][i]);
+                  }
+                }
+                break;
+              }
+            }
+          }
+        })
+      setMedHistory(all);
     }
+    getMedHistory();
+    return;
+  }, [medHistory.length])
 
-    try {
-      const patientData = await mycontract.methods.getPatient().call(); // Assuming getPatient() fetches data from blockchain
-      // If data is stored on IPFS, retrieve details using IPFS hash from patientData
-      const processedData = processDataFromBlockchain(patientData); // Process fetched data (optional)
-      setMedicalHistory(processedData);
-    } catch (error) {
-      setError(error);
-      console.error('Error fetching medical history:', error);
-    }
+  const [addFormData, setAddFormData] = useState({
+    disease: "",
+    time: "",
+    solved: "",
+  });
+
+  const handleAddFormChange = (event) => {
+    const newFormData = { ...addFormData };
+    newFormData[event.target.name] = event.target.value;
+    setAddFormData(newFormData);
   };
 
-  useEffect(() => {
-    fetchData(); // Fetch data on component mount
-  }, [mycontract]); // Dependency array: Re-fetch data when contract changes
 
-  // Handle errors, loading state, and display medical history data (JSX)
-  return (
-    <div>
-      {error ? (
-        <p>Error: {error.message}</p>
-      ) : medicalHistory ? (
-        <table>
-          <tbody>
-            {/* Display medical history data from medicalHistory state */}
-            <tr>
-              {/* ... table rows with patient information ... */}
-            </tr>
-          </tbody>
-        </table>
-      ) : (
-        <p>Loading medical history...</p>
-      )}
-      <button onClick={fetchData}>Refresh Data</button>
-    </div>
-  );
-};
+  async function submit() {
+    var accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    var currentaddress = accounts[0];
 
-// Function to process data from blockchain (optional)
-function processDataFromBlockchain(data) {
-  // Implement logic to handle any necessary data transformation
-  return data; // Or return the processed data
-}
+    const web3 = new Web3(window.ethereum);
+    const mycontract = new web3.eth.Contract(
+      contract["abi"],
+      contract["address"]
+    );
+
+    mycontract.methods
+      .getdata()
+      .call()
+      .then((res) => {
+        for (let i = 0; i < res.length; i++) {
+          var data = JSON.parse(res[i]);
+          // console.log(data['mail']);
+          if (data["mail"] === cookies["mail"]) {
+            data["medicalhistory"].push(addFormData);
+
+            mycontract.methods
+              .updateData(parseInt(cookies["index"]), JSON.stringify(data))
+              .send({ from: currentaddress })
+              .then(() => {
+                alert("Medical History Saved");
+                window.location.reload();
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+
+            break;
+          }
+        }
+      });
+  }
+
+  async function show() {
+    cookies["medicalhistory"].map((data) => {
+      console.log(data);
+    });
+  }
 
   return (
     <div className="flex relative dark:bg-main-dark-bg">
@@ -101,11 +125,16 @@ function processDataFromBlockchain(data) {
                   <th className="">Disease</th>
                   <th className="">Diagnosed Date</th>
                   <th className="">Status</th>
-                  <th className="">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {getMedHistory()}
+                {medHistory.map((mh) => (
+                  <tr>
+                    <td>{mh.disease}</td>
+                    <td>{mh.time}</td>
+                    <td>{mh.solved}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </form>
@@ -147,6 +176,6 @@ function processDataFromBlockchain(data) {
       </div>
     </div>
   );
-;
+};
 
 export default MedicalHistory;
