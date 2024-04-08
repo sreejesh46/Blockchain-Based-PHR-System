@@ -23,11 +23,11 @@ const Signup = () => {
         "name": "",
         "mail": "",
         "password": "",
-        license: "",
-        speciality: ""
+        "license": "",
+        "speciality": ""
     });
 
-    function handle(e) {
+    const handle = (e) => {
         const newData1 = { ...regp };
         const newData2 = { ...regd };
         newData1[e.target.name] = e.target.value;
@@ -36,48 +36,39 @@ const Signup = () => {
         setRegd(newData2);
     }
 
-    async function register(e) {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const currentaddress = accounts[0];
+    const register = async (e) => {
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const currentaddress = accounts[0];
 
-        const web3 = new Web3(window.ethereum);
-        const mycontract = new web3.eth.Contract(
-            contract["abi"],
-            contract["address"]
-        );
+            const web3 = new Web3(window.ethereum);
+            const mycontract = new web3.eth.Contract(
+                contract["abi"],
+                contract["address"]
+            );
 
-        if (!e) {
-            // patient
+            let regData = e ? regd : regp; // Determine whether registering a doctor or patient
+
             let client = create();
             client = create(new URL('http://127.0.0.1:5001'));
-            const { cid } = await client.add(JSON.stringify(regp));
+            const { cid } = await client.add(JSON.stringify(regData));
             const hash = cid['_baseCache'].get('z');
-            console.log(hash);
 
-            await mycontract.methods.addPatient(hash).send({ from: currentaddress }).then(() => {
-                alert("Account created");
-            }).catch((err) => {
-                console.log(err);
-            })
-        }
-        else {
-            // doctor
-            let client = create();
-            client = create(new URL('http://127.0.0.1:5001'));
-            const { cid } = await client.add(JSON.stringify(regd));
-            const hash = cid['_baseCache'].get('z');
-            console.log(hash);
+            if (e) {
+                // Registering a doctor
+                await mycontract.methods.addDoctor(hash).send({ from: currentaddress });
+            } else {
+                // Registering a patient
+                await mycontract.methods.addPatient(hash).send({ from: currentaddress });
+            }
 
-            await mycontract.methods.addDoctor(hash).send({ from: currentaddress }).then(() => {
-                alert("Account created");
-            }).catch((err) => {
-                console.log(err);
-            })
+            alert("Account created");
+        } catch (error) {
+            console.error("Error registering account:", error);
         }
     }
 
     return (
-
         <div className="login-container bg-gradient-to-r from-green-500 to-green-500 via-teal-200 ">
             <form className="login-form backdrop-blur-lg
                [ p-8 md:p-10 lg:p-10 ]
@@ -110,8 +101,6 @@ const Signup = () => {
                             <h5>Email</h5>
                         </div>
                         <input onChange={(e) => handle(e)} type="mail" placeholder="youremail@gmail.com" id="email" name="mail" />
-
-
                     </div>
 
                     {type &&
@@ -121,14 +110,14 @@ const Signup = () => {
                                     <i className="fas fa-suitcase"></i>
                                     <p>Specialization</p>
                                 </div>
-                                <input onChange={(e) => handleD(e)} type="text" placeholder="Specialization" id="email" name="speciality" />
+                                <input onChange={(e) => handle(e)} type="text" placeholder="Specialization" id="speciality" name="speciality" />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div className="input-heading">
                                     <i className="fas fa-key"></i>
                                     <p>License No.</p>
                                 </div>
-                                <input onChange={(e) => handleD(e)} type="text" placeholder="License No." id="email" name="license" />
+                                <input onChange={(e) => handle(e)} type="text" placeholder="License No." id="license" name="license" />
                             </div>
                         </div>
                     }
@@ -139,7 +128,6 @@ const Signup = () => {
                             <h5>Password</h5>
                         </div>
                         <input onChange={(e) => handle(e)} type="password" placeholder="********" id="password" name="password" />
-
                     </div>
 
                 </div>
@@ -148,10 +136,8 @@ const Signup = () => {
                 <p style={{ textAlign: "right" }}>Already a user?
                     <Link style={{ marginLeft: "4px", color: "black", textDecoration: "underline" }} to='/login'>Log In.</Link>
                 </p>
-
             </form>
         </div>
-
     )
 }
 
