@@ -166,7 +166,7 @@ const MedicalHistory = () => {
 
                     <form style={{
                         display: 'flex', flexDirection: 'column', gap: '1rem',
-                        backgroundColor: 'rgb(3, 201, 215)',
+                        backgroundColor: 'rgb(74,222,128)',
                         justifyContent: 'center',
                         alignItems: 'center',
                         padding: '24px',

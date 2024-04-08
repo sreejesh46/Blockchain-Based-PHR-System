@@ -1,64 +1,64 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useState, useEffect } from 'react';
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
 import { useCookies } from 'react-cookie';
-import Web3 from "web3"; // Import Web3
+import Web3 from "web3";
+import contract from '../contracts/contract.json';
 
 const MyProfile = () => {
+  const web3 = new Web3(window.ethereum);
+  const mycontract = new web3.eth.Contract(
+    contract["abi"],
+    contract["address"]
+  );
   const [cookies, setCookie] = useCookies();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      const hash = cookies['hash'];
-      const response = await fetch(`http://localhost:8080/ipfs/${hash}`);
-      const data = await response.json();
-      setName(data.name);
-      setEmail(data.mail);
-      setPassword(data.password);
-    };
-    fetchData();
-  }, [cookies]); // Dependency added to ensure useEffect runs only when cookies change
+    const hash = cookies['hash'];
+    fetch(`http://localhost:8080/ipfs/${hash}`)
+      .then(res => res.json())
+      .then(res => {
+        setName(res.name);
+        setEmail(res.mail);
+        setPassword(res.password);
+      })
+  })
 
-  const handleGameClick = (fieldName) => {
-    switch (fieldName) {
-      case 'name':
-        setName(!name);
-        break;
-      case 'email':
-        setEmail(!email);
-        break;
-      case 'password':
-        setPassword(!password);
-        break;
-      default:
-        break;
-    }
-  };
+  const [auth, setAuth] = useState({
+    "type": "user",
+    "name": name,
+    "mail": email,
+    "password": password
+  })
 
-  const save = async () => {
-    try {
-      setCookie("name", name);
-      setCookie("mail", email);
-      setCookie("password", password);
-      var accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      var currentaddress = accounts[0];
+  const [disabled1, setDisabled1] = useState(true);
 
-      // Define contract object properly
-      const contract = {}; // Assuming contract object structure
-      const web3 = new Web3(window.ethereum);
-      const mycontract = new web3.eth.Contract(contract['abi'], contract['networks']['5777']['address']);
-      mycontract.methods.updateData(parseInt(cookies['index']), JSON.stringify({ name, mail: email, password })).send({ from: currentaddress })
-        .then(res => {
-          console.log(res);
-        });
-    } catch (error) {
-      console.error('Error saving data:', error);
-    }
-  };
+  function handleGameClick1() {
+    setDisabled1(!disabled1);
+  }
+  const [disabled2, setDisabled2] = useState(true);
+
+  function handleGameClick2() {
+    setDisabled2(!disabled2);
+  }
+  const [disabled3, setDisabled3] = useState(true);
+
+  function handleGameClick3() {
+    setDisabled3(!disabled3);
+  }
+
+  async function save() {
+
+  }
+
+  async function show() {
+
+  }
 
   return (
     <div className="flex relative dark:bg-main-dark-bg">
@@ -66,27 +66,33 @@ const MyProfile = () => {
         <Sidebar />
       </div>
 
-      <div className="dark:bg-main-dark-bg bg-main-bg min-h-screen ml-72 w-full">
-        <div className="fixed md:static bg-main-bg dark:bg-main-dark-bg navbar w-full">
+      <div
+        className={
+          "dark:bg-main-dark-bg  bg-main-bg min-h-screen ml-72 w-full  "
+        }
+      >
+        <div className="fixed md:static bg-main-bg dark:bg-main-dark-bg navbar w-full ">
           <Navbar />
         </div>
         <div className="flex justify-center m-10 ">
           <form className=" p-5 bg-slate-100 rounded-lg">
             <h1 className="text-center text-lg">User Profile</h1>
+
+
             <div className="py-2">
               <label className="text-black">
                 Name:
                 <input
                   id="inp"
                   style={{ padding: "10px", margin: "10px", color: "black" }}
-                  name="name"
-                  type="text"
+                  name="email"
+                  type="email"
                   value={name}
-                  onChange={() => handleGameClick('name')}
-                  disabled={name}
+                  onChange={e => setName(e.target.value)}
+                  disabled={disabled1}
                   required />
               </label>
-              <input type="button" value="✎" className="text-2xl hover:text-blue-400 cursor-pointer" onClick={() => handleGameClick('name')} />
+              <input type="button" value="✎" className="text-2xl hover:text-blue-400 cursor-pointer" onClick={handleGameClick1}></input>
             </div>
 
             <div className="py-2">
@@ -98,12 +104,14 @@ const MyProfile = () => {
                   name="email"
                   type="email"
                   value={email}
-                  onChange={() => handleGameClick('email')}
-                  disabled={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={disabled2}
                   required />
               </label>
-              <input type="button" value="✎" className="text-2xl hover:text-blue-400 cursor-pointer" onClick={() => handleGameClick('email')} />
+              <input type="button" value="✎" className="text-2xl hover:text-blue-400 cursor-pointer" onClick={handleGameClick2}></input>
             </div>
+
+
 
             <div className="py-2">
               <label className="text-black">
@@ -113,18 +121,20 @@ const MyProfile = () => {
                   name="password"
                   type="password"
                   value={password}
-                  onChange={() => handleGameClick('password')}
-                  disabled={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={disabled3}
                   required />
               </label >
-              <input type="button" value="✎" className="text-2xl hover:text-blue-400 cursor-pointer" onClick={() => handleGameClick('password')} />
+              <input type="button" value="✎" className="text-2xl hover:text-blue-400 cursor-pointer" onClick={handleGameClick3}></input>
             </div>
 
             <div className="py-2">
-              <input type="button" value="Save" onClick={save} className="bg-cyan-400 text-white font-medium p-3" />
+              <input type="button" value="Save" onClick={save} className="bg-green-400 text-white font-medium p-3" />
             </div>
+
           </form>
         </div>
+
         <Footer />
       </div>
     </div>

@@ -53,7 +53,7 @@ const UserProfile = () => {
         </div>
       </div>
       <div className="mt-5">
-        <input type="button" style={{backgroundColor: "rgb(3, 201, 215)", padding: "8px 12px", borderRadius:'4px', color:'white'}} value="Logout" onClick={logout} />
+        <input type="button" style={{backgroundColor: "rgb(74,222,128)", padding: "8px 12px", borderRadius:'4px', color:'white'}} value="Logout" onClick={logout} />
       </div>
     </div>
 
