@@ -143,17 +143,24 @@ const MedicalHistory = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {medHistory.map((mh, index) => (
-                                    <tr key={index}>
-                                        <td>{mh.disease}</td>
-                                        <td>{mh.time}</td>
-                                        <td>{mh.solved}</td>
-                                        <td>
-                                            <input type="button" value="Delete" onClick={() => del(index)} />
-                                        </td>
+                                    {medHistory.length > 0 ? (
+                                    medHistory.map((mh, index) => (
+                                        <tr key={index}>
+                                            <td>{mh.disease}</td>
+                                            <td>{mh.time}</td>
+                                            <td>{mh.solved}</td>
+                                            <td>
+                                                <input type="button" value="Delete" onClick={() => del(index)} />
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="4">No medical history found</td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
+
                         </table>
                     </form>
 

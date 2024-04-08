@@ -140,21 +140,22 @@ const Allergies = () => {
   }
 
   function showAllergies() {
-    if (allergies.length > 0) {
-      return allergies[0].map(allergy => {
-        return (
-          <tr>
-            <td>{allergy.name}</td>
-            <td>{allergy.type}</td>
-            <td>{allergy.medication}</td>
-            <td>
-              <input type="button" value="Delete" onClick={() => del(allergy.name)} />
-            </td>
-          </tr>
-        )
-      })
+    if (allergies.length > 0 && allergies[0].length > 0) {
+      return allergies[0].map((allergy, index) => (
+        <tr key={index}>
+          <td>{allergy.name}</td>
+          <td>{allergy.type}</td>
+          <td>{allergy.medication}</td>
+          <td>
+            <input type="button" value="Delete" onClick={() => del(allergy.name)} />
+          </td>
+        </tr>
+      ));
+    } else {
+      return <tr><td colSpan="4">No allergies found</td></tr>;
     }
   }
+  
 
   return (
     <div className="flex relative dark:bg-main-dark-bg">

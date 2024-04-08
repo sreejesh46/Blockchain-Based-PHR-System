@@ -185,7 +185,7 @@ const Visits = () => {
                                     <tr>
                                         <td colSpan="4">Loading...</td>
                                     </tr>
-                                ) : (
+                                ) : visits.length > 0 ? (
                                     visits.map((item, index) => (
                                         <tr key={index}>
                                             <td>{item.name}</td>
@@ -196,8 +196,13 @@ const Visits = () => {
                                             </td>
                                         </tr>
                                     ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="4">No visit history found</td>
+                                    </tr>
                                 )}
                             </tbody>
+
                         </table>
                     </form>
 
@@ -209,7 +214,7 @@ const Visits = () => {
                         padding: '24px',
                         borderRadius: '20px',
                     }}>
-                        <h2>Add your Medical History</h2>
+                        <h2>Add your Checkup History</h2>
                         <input
                             type="text"
                             name="name"
