@@ -2,9 +2,8 @@ import React from 'react';
 import { BsCurrencyDollar } from 'react-icons/bs';
 import { CgProfile } from 'react-icons/cg';
 import { FaAllergies } from 'react-icons/fa';
-import { IoDocumentOutline} from 'react-icons/io5';
-import { MdOutlineMeetingRoom, MdOutlineMedicalServices, MdMedicalServices} from 'react-icons/md';
-
+import { IoDocumentOutline } from 'react-icons/io5';
+import { MdOutlineMeetingRoom, MdOutlineMedicalServices, MdMedicalServices } from 'react-icons/md';
 
 export const links = [
   {
@@ -16,7 +15,7 @@ export const links = [
       },
     ],
   },
-  
+
   {
     title: 'Health Records',
     links: [
@@ -38,8 +37,8 @@ export const links = [
       },
       {
         name: 'checkup history',
-        icon: <MdOutlineMeetingRoom/>,
-      }
+        icon: <MdOutlineMeetingRoom />,
+      },
     ],
   },
   {
@@ -50,7 +49,7 @@ export const links = [
         icon: <MdOutlineMedicalServices />,
       },
     ],
-  }
+  },
 ];
 
 export const themeColors = [

@@ -138,9 +138,12 @@ const Allergies = () => {
       }
     })
   }
-
   function showAllergies() {
-    if (allergies.length > 0 && allergies[0].length > 0) {
+    if (allergies.length === 0) {
+      return <tr><td colSpan="4">Loading...</td></tr>;
+    } else if (allergies[0].length === 0) {
+      return <tr><td colSpan="4">No allergies found</td></tr>;
+    } else {
       return allergies[0].map((allergy, index) => (
         <tr key={index}>
           <td>{allergy.name}</td>
@@ -151,12 +154,10 @@ const Allergies = () => {
           </td>
         </tr>
       ));
-    } else {
-      return <tr><td colSpan="4">No allergies found</td></tr>;
     }
   }
   
-
+  
   return (
     <div className="flex relative dark:bg-main-dark-bg">
       <div className="w-72 fixed sidebar dark:bg-secondary-dark-bg bg-white ">

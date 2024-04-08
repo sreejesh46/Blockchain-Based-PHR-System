@@ -3,7 +3,6 @@ import { BsCurrencyDollar } from 'react-icons/bs';
 import { CgProfile } from 'react-icons/cg';
 import { MdOutlineMedicalServices } from 'react-icons/md';
 
-
 export const links = [
   {
     title: 'Dashboard',
