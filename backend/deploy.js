@@ -11,10 +11,10 @@ async function deploy() {
     contract = contract.deploy({data: bytecode});
 
     const deployContract = await contract.send({
-        from: "0x41E169591Ae9705E0dF6335390d83f9C7B3E854a",
+        from: "0xbeB6177E21f52f80349156042C605662d9c70919",
         gas: "6721975",
     })
     console.log(deployContract.options.address);
-}
+}  
 
 deploy();
