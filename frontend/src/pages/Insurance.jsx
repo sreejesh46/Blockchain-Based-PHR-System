@@ -132,23 +132,24 @@ const Insurance = () => {
       }
     })
   }
-
+  
   function showInsurances() {
-    if (insurances.length > 0) {
-      return insurances[0].map(data => {
-        return (
-          <tr>
-            <td>{data.company}</td>
-            <td>{data.policyNo}</td>
-            <td>{data.expiry}</td>
-            <td>
-              <input type="button" value="Delete" onClick={() => del(data.policyNo)} />
-            </td>
-          </tr>
-        )
-      })
+    if (insurances.length > 0 && insurances[0].length > 0) {
+        return insurances[0].map((data, index) => (
+            <tr key={index}>
+                <td>{data.company}</td>
+                <td>{data.policyNo}</td>
+                <td>{data.expiry}</td>
+                <td>
+                    <input type="button" value="Delete" onClick={() => del(data.policyNo)} />
+                </td>
+            </tr>
+        ));
+    } else {
+        return <tr><td colSpan="4">No insurances found</td></tr>;
     }
-  }
+}
+
 
   return (
     <div className="flex relative dark:bg-main-dark-bg">

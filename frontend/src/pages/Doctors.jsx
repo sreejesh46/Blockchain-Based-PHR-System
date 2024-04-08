@@ -85,17 +85,22 @@ const Doctors = () => {
     }
 
     function showDoctors() {
-        return doctors.map(data => {
-            return (
-                <tr>
-                    <td>{data.name}</td>
-                    <td>{data.mail}</td>
-                    <td>{data.speciality}</td>
-                    <td><input type="button" value="Add" onClick={() => add(data.hash)} /></td>
-                </tr>
-            )
-        })
-    }
+        if (!doctors || doctors.length === 0) {
+          return <tr><td colSpan="4">No doctors found</td></tr>;
+        }
+      
+        return doctors.map((data, index) => {
+          return (
+            <tr key={index}>
+              <td>{data.name}</td>
+              <td>{data.mail}</td>
+              <td>{data.speciality}</td>
+              <td><input type="button" value="Add" onClick={() => add(data.hash)} /></td>
+            </tr>
+          );
+        });
+      }
+      
 
     return (
         <div className="flex relative dark:bg-main-dark-bg">
