@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { FiSettings } from 'react-icons/fi';
-import { TooltipComponent } from '@syncfusion/ej2-react-popups';
-
 import { Navbar, Footer, Sidebar, ThemeSettings } from './components';
-import { Home, MyProfile, MyProfileDoc, Doctors, Visits, Patients, MedicalHistory, HospitalizationHistory, Insurance, Allergies, PredictDisease, Login, Signup } from './pages';
+import { Home, MyProfile, MyProfileDoc, Doctors, Visits, Patients, MedicalHistory, HospitalizationHistory, Insurance, Allergies, Login, Signup} from './pages';
+import GenerateRecord from './pages/GenerateRecord';
 import PatientInfo from './pages/PatientInfo';
 import './App.css';
 
@@ -36,12 +34,14 @@ const App = () => {
                 {/* pages  */}
                 <Route path="/insurance" element={<Insurance />} />
                 <Route path="/allergies" element={<Allergies />} />
+                <Route path="/generaterecord" element={<GenerateRecord />} />
                 <Route path="/medicalhistory" element={<MedicalHistory />} />
                 <Route path="/hospitalizationhistory" element={<HospitalizationHistory />} />
                 <Route path="/checkuphistory" element={<Visits />} />
                 <Route path="/doctors" element={<Doctors />} />
                 <Route path="/patients" element={<Patients />} />
                 <Route exact path="/patientData/:phash" element={<PatientInfo />} />
+                
 
               </Routes>
       </BrowserRouter>

@@ -1,5 +1,4 @@
 import React, { useState, Fragment, useEffect } from "react";
-import { nanoid } from "nanoid";
 import Web3 from "web3";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
@@ -7,6 +6,7 @@ import Footer from "../components/Footer";
 import contract from "../contracts/contract.json";
 import { useCookies } from "react-cookie";
 import { create } from 'ipfs-http-client'
+import PatientInfo from "./PatientInfo";
 
 const Allergies = () => {
   const web3 = new Web3(window.ethereum);
@@ -17,26 +17,31 @@ const Allergies = () => {
   const [cookies, setCookie] = useCookies();
   const [allergies, setallergies] = useState([]);
 
-  useEffect(() => {
-    const ins = [];
-    async function getIns() {
-      await mycontract.methods
-        .getPatient()
-        .call()
-        .then(async (res) => {
-          for (let i = res.length - 1; i >= 0; i--) {
-            if (res[i] === cookies['hash']) {
-              const data = await (await fetch(`http://localhost:8080/ipfs/${res[i]}`)).json();
-              ins.push(data.allergies);
-              break;
-            }
+  const [loading, setLoading] = useState(true);
+  const [allergiesFetched, setAllergiesFetched] = useState(false);
+
+useEffect(() => {
+  const ins = [];
+  async function getIns() {
+    await mycontract.methods
+      .getPatient()
+      .call()
+      .then(async (res) => {
+        for (let i = res.length - 1; i >= 0; i--) {
+          if (res[i] === cookies['hash']) {
+            const data = await (await fetch(`http://localhost:8080/ipfs/${res[i]}`)).json();
+            ins.push(data.allergies);
+            break;
           }
-        });
-      setallergies(ins);
-    }
-    getIns();
-    return;
-  }, [allergies.length]);
+        }
+      });
+    setallergies(ins);
+    setLoading(false);
+    setAllergiesFetched(true); 
+  }
+  getIns();
+}, [allergies.length]);
+  
 
   const [addFormData, setAddFormData] = useState({
     name: "",
@@ -138,12 +143,9 @@ const Allergies = () => {
       }
     })
   }
+  
   function showAllergies() {
-    if (allergies.length === 0) {
-      return <tr><td colSpan="4">Loading...</td></tr>;
-    } else if (allergies[0].length === 0) {
-      return <tr><td colSpan="4">No allergies found</td></tr>;
-    } else {
+    if (allergies.length > 0 && allergies[0].length > 0) {
       return allergies[0].map((allergy, index) => (
         <tr key={index}>
           <td>{allergy.name}</td>
@@ -154,9 +156,10 @@ const Allergies = () => {
           </td>
         </tr>
       ));
-    }
+    }else {
+      return <tr><td colSpan="4">No allergies found</td></tr>;
   }
-  
+}
   
   return (
     <div className="flex relative dark:bg-main-dark-bg">

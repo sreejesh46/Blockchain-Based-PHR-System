@@ -4,6 +4,7 @@ import { MdOutlineCancel } from 'react-icons/md';
 import { Link, NavLink } from "react-router-dom";
 
 import { userProfileData } from '../data/dummy';
+import Header from './Header';
 import { useStateContext } from '../contexts/ContextProvider';
 import avatar from '../data/avatar.png';
 import { useCookies } from 'react-cookie';

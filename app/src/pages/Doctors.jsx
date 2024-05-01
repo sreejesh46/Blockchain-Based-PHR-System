@@ -1,5 +1,4 @@
 import React, { useState, Fragment, useEffect, useRef } from "react";
-import { nanoid } from "nanoid";
 import Web3 from "web3";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
